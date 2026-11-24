@@ -94,6 +94,13 @@ function firstJson<T>(text: string): T | undefined {
   }
 }
 
+/** Vercel sets x-forwarded-for; the first entry is the caller. */
+function ipOf(headers: Record<string, string | undefined>): string {
+  const forwarded = headers["x-forwarded-for"];
+  if (typeof forwarded === "string" && forwarded.length > 0) return forwarded.split(",")[0]!.trim();
+  return headers["x-real-ip"] ?? "unknown";
+}
+
 function guard(
   headers: Record<string, string | undefined>,
   ip: string,
@@ -155,13 +162,14 @@ export default new Elysia()
   /* ---- tanya jawab: model menjawab HANYA dari angka yang dikirim klien ---- */
   .post(
     "/v1/ai/ask",
-    async ({ body, headers, server, set }) => {
-      const ip = server?.requestIP?.(server.request)?.address ?? "unknown";
-      const blocked = guard(headers as Record<string, string | undefined>, ip);
+    async ({ body, headers, set }) => {
+      const blocked = guard(headers as Record<string, string | undefined>, ipOf(headers));
       if (blocked) {
         set.status = blocked.status;
         return { error: blocked.error };
       }
+
+      const { question, context } = body as { question: string; context: Record<string, unknown> };
 
       try {
         const answer = await askModel(
@@ -187,16 +195,15 @@ export default new Elysia()
     {
       body: t.Object({
         question: t.String({ minLength: 2, maxLength: 300 }),
-        context: t.Record(t.String(), t.Any()),
+        context: t.Any(),
       }),
     },
   )
   /* ---- scan struk: teks ditempel atau foto dikirim, model mengembalikan JSON ---- */
   .post(
     "/v1/ai/receipt",
-    async ({ body, headers, server, set }) => {
-      const ip = server?.requestIP?.(server.request)?.address ?? "unknown";
-      const blocked = guard(headers as Record<string, string | undefined>, ip);
+    async ({ body, headers, set }) => {
+      const blocked = guard(headers as Record<string, string | undefined>, ipOf(headers));
       if (blocked) {
         set.status = blocked.status;
         return { error: blocked.error };
@@ -208,12 +215,13 @@ export default new Elysia()
         "total = angka yang benar-benar dibayar (baris TOTAL/jumlah bayar), bukan subtotal dan bukan uang tunai. " +
         "Angka rupiah tanpa titik atau koma. Kalau tidak yakin, pakai null.";
 
+      const { text, image } = body as { text?: string; image?: string };
       const content: unknown[] = [{ type: "text", text: instruction }];
-      if (body.image) content.push({ type: "image_url", image_url: { url: body.image } });
-      if (body.text) content.push({ type: "text", text: `Teks struk:\n${body.text}` });
+      if (image) content.push({ type: "image_url", image_url: { url: image } });
+      if (text) content.push({ type: "text", text: `Teks struk:\n${text}` });
 
       try {
-        const raw = await askModel([{ role: "user", content }], body.image ? AI_VISION_MODEL : AI_MODEL, 800);
+        const raw = await askModel([{ role: "user", content }], image ? AI_VISION_MODEL : AI_MODEL, 800);
         const parsed = firstJson<{
           merchant?: string | null;
           total?: number | null;
@@ -229,7 +237,7 @@ export default new Elysia()
           total: typeof parsed.total === "number" ? Math.round(parsed.total) : null,
           date: parsed.date ?? null,
           items: Array.isArray(parsed.items) ? parsed.items.slice(0, 30) : [],
-          model: body.image ? AI_VISION_MODEL : AI_MODEL,
+          model: image ? AI_VISION_MODEL : AI_MODEL,
         };
       } catch (error) {
         set.status = 502;
