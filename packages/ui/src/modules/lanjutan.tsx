@@ -105,8 +105,9 @@ export function ScanStrukModule({ book, walletIds }: ModuleProps) {
   return (
     <>
       <Intro>
-        Tempel atau tulis isi struk di kotak bawah. Angka totalnya dibaca di perangkat ini — tanpa internet, tanpa
-        kirim foto ke mana pun. Semua hasil bisa diperbaiki sebelum disimpan.
+        Tempel isi struk, atau foto struknya. <strong>Baca tanpa AI</strong> menghitung di perangkat ini saja — tanpa
+        internet. <strong>Baca dengan AI</strong> mengirim teks atau foto ke server demo untuk dibaca model, karena itu
+        butuh koneksi. Hasil keduanya bisa diperbaiki sebelum disimpan.
       </Intro>
 
       <div className="module-form">
@@ -331,8 +332,9 @@ export function TanyaModule({ book, walletIds, v }: ModuleProps) {
   return (
     <>
       <Intro>
-        Jawaban dihitung dari catatan di perangkat ini — {v.masuk.toLowerCase()}, {v.keluar.toLowerCase()}, dompet,
-        anggaran, utang, dan tujuan. Tidak ada model bahasa, jadi jawabannya selalu bisa ditelusuri.
+        <strong>Hitung sendiri</strong> menjawab tanpa model, langsung dari catatan di perangkat ini, jadi selalu bisa
+        ditelusuri. <strong>Tanya AI</strong> mengirim ringkasan angka (total, dompet, anggaran, utang, tujuan — bukan
+        isi catatan per baris) ke server demo, lalu dijawab model bahasa.
       </Intro>
 
       <div className="module-form">
