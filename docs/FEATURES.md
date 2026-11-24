@@ -96,8 +96,8 @@ dibangun.
 | Split bill (pekerja) | ✅ | pembagian bulat rupiah + sisa disebut; 100.000 ÷ 3 = 33.333 + 1 |
 | Aset usaha (UMKM) | ✅ | harga beli, nilai sekarang, susut, daftar |
 | Offline queue | ✅ | antrean lokal, retry saat online, jumlah terlihat di menu Sinkronisasi — 4 unit test |
-| Scan struk dari **foto** | ⛔ belum | butuh model OCR; versi teks sudah jalan |
-| AI chat model bahasa | ⛔ belum | versi tanpa AI sudah jalan; jawaban bebas butuh model |
+| Scan struk dari **foto** | ✅ | `qwen3.8-flash` (vision) membaca foto struk: total, tanggal, merchant. Uji nyata: struk sintetis 137.000 terbaca benar, bukan angka tunai 150.000 |
+| AI chat model bahasa | ✅ | `deepseek-v4.1-flash` menjawab dari ringkasan data di perangkat; tombol "Hitung sendiri" tetap ada sebagai jalur tanpa AI |
 | Multi-pengguna per usaha | ⛔ belum | butuh akun + hak akses; demo sengaja tanpa login |
 | Aset/investasi sebagai portofolio | ⚠️ sebagian | aset tetap sudah; investasi belum |
 
@@ -153,3 +153,18 @@ JSX dikompilasi di browser). Setiap modul di atas harus lolos:
 1. Publik atau privat datanya? (contoh klien = satu spreadsheet bersama; demo kelas = per perangkat)
 2. Perlu layar fasilitator untuk menilai 50 peserta, atau penilaian tetap di kertas?
 3. Fase 2 diminta sekarang atau setelah pelatihan?
+
+## Proxy AI (fase 3)
+
+Klien memanggil `fintracker-api`, bukan penyedia model. Kunci model hanya ada di environment
+project API (`AI_BASE_URL`, `AI_MODEL`, `AI_VISION_MODEL`).
+
+| Pengaman | Isi |
+|---|---|
+| `x-ai-token` | token demo; ikut ter-inline di bundel frontend, jadi ini **bukan rahasia**, hanya penghalang lambat |
+| Rate limit | 40 permintaan/jam per IP (in-memory per instance) |
+| Tanpa token | `401` (diuji) |
+| Tanpa konfigurasi | `503`, dan UI menyembunyikan tombol AI |
+
+Deployment Protection project API **dimatikan** supaya peramban bisa memanggilnya; konsekuensinya
+endpoint ini publik. Kalau demo selesai, matikan lagi proteksinya atau hapus project-nya.

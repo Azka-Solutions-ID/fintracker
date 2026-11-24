@@ -34,7 +34,16 @@ deployment yang sama, jadi tautan lama tidak mati.
 Domain baru ditambahkan dengan `vercel domains add <project>.vercel.app <project>` — bukan hanya
 `vercel alias set`, karena alias saja tidak ikut produksi berikutnya.
 
-## API: terlindungi SSO
+## API: publik, dengan token demo
+
+Deployment Protection project API dimatikan (PATCH `ssoProtection: null`) karena peramban harus
+bisa memanggil `/v1/ai/*`. Penggantinya: header `x-ai-token` + rate limit 40/jam/IP, dan kunci
+model tetap hanya di server.
+
+Mematikan proteksi lagi setelah demo: buka project → Settings → Deployment Protection, atau
+`vercel api /v9/projects/fintracker-api -X PATCH` dengan `ssoProtection` diisi konfigurasi SSO.
+
+## API: catatan lama (SSO)
 
 `fintracker-api.vercel.app/health` menjawab **302 ke vercel.com/sso-api**, bukan 200: project API
 punya Deployment Protection. Artinya API **tidak bisa ditulis publik** — bagus untuk sekarang,
