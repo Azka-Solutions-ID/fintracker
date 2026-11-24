@@ -66,3 +66,9 @@ Yang sengaja belum: scan dari foto, AI chat dengan model bahasa, dan multi-pengg
 butuh model atau akun. Daftar itu tampil apa adanya di layar Fitur, tanpa tombol mati.
 
 Data disimpan di perangkat (`localStorage`, namespace `sidp.umkm` / `sidp.pekerja`).
+
+## Deploy
+
+Monorepo ini = **dua** project Vercel (satu per aplikasi, Root Directory `apps/umkm` dan
+`apps/pekerja`). Setelan lengkap, cara menangani project ketiga, dan env API ada di
+[`docs/DEPLOY.md`](docs/DEPLOY.md).

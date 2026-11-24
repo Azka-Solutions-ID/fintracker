@@ -1,7 +1,10 @@
 {
   "name": "sidp-keuangan",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:umkm": "bun --cwd apps/umkm run dev",
     "dev:pekerja": "bun --cwd apps/pekerja run dev",
@@ -14,5 +17,6 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.7.0"
-  }
+  },
+  "packageManager": "bun@1.2.21"
 }

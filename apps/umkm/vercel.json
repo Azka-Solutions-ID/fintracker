@@ -3,5 +3,6 @@
   "bunVersion": "1.x",
   "framework": "vite",
   "buildCommand": "bun run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "installCommand": "bun install --filter @sidp/app-umkm"
 }
