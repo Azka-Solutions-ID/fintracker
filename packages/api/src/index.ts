@@ -181,7 +181,7 @@ export default new Elysia()
                 "Kalau pertanyaannya tidak bisa dijawab dari konteks, katakan terus terang bahwa datanya belum ada. " +
                 "Gaya: bahasa Indonesia sehari-hari, maksimal 45 kata, sebut angka dalam rupiah, tanpa basa-basi dan tanpa markdown.",
             },
-            { role: "user", content: `KONTEKS:\n${JSON.stringify(body.context)}\n\nPERTANYAAN: ${body.question}` },
+            { role: "user", content: `KONTEKS:\n${JSON.stringify(context)}\n\nPERTANYAAN: ${question}` },
           ],
           AI_MODEL,
           500,
