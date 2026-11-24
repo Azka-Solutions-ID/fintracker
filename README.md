@@ -69,6 +69,11 @@ Data disimpan di perangkat (`localStorage`, namespace `sidp.umkm` / `sidp.pekerj
 
 ## Deploy
 
-Monorepo ini = **dua** project Vercel (satu per aplikasi, Root Directory `apps/umkm` dan
-`apps/pekerja`). Setelan lengkap, cara menangani project ketiga, dan env API ada di
+Monorepo ini = **dua** aplikasi Vercel (satu project per aplikasi):
+
+- UMKM — https://fintracker-umkm.vercel.app
+- Pekerja — https://fintracker-pekerja.vercel.app
+
+Project ketiga (`fintracker-api`, Elysia) ikut terbuat saat impor karena Vercel mendeteksi
+framework di `packages/api`; ia terlindungi SSO dan belum dipakai demo. Setelan lengkap ada di
 [`docs/DEPLOY.md`](docs/DEPLOY.md).

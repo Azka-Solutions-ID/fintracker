@@ -7,10 +7,14 @@ root directory** yang diimpor (lihat https://vercel.com/docs/monorepos — "you'
 project for each directory in your monorepo that you wish to import"). Jadi jumlah project yang
 benar sekarang: **dua**.
 
-| Project | Root Directory | Framework | Build | Output |
-|---|---|---|---|---|
-| `fintracker-umkm` | `apps/umkm` | Vite | `bun run build` | `dist` |
-| `fintracker-pekerja` | `apps/pekerja` | Vite | `bun run build` | `dist` |
+| Project | Root Directory | Framework | Build | Output | URL |
+|---|---|---|---|---|---|
+| `fintracker-umkm` | `apps/umkm` | Vite | `bun run build` | `dist` | https://fintracker-umkm.vercel.app |
+| `fintracker-pekerja` | `apps/pekerja` | Vite | `bun run build` | `dist` | https://fintracker-pekerja.vercel.app |
+| `fintracker-api` (opsional) | `packages/api` | Elysia | — | — | https://fintracker-api.vercel.app (SSO) |
+
+Ketiga project ada di tim `mai-aphrodites-projects`. Dua yang pertama adalah aplikasi; yang ketiga
+adalah API dan **tidak dipakai demo** (klien berjalan mode perangkat).
 
 `Root Directory` adalah **setelan project**, bukan properti `vercel.json`
 (sumber: https://github.com/vercel/vercel/blob/main/skills/vercel-cli/references/monorepos.md).
@@ -19,6 +23,23 @@ Karena itu `vercel.json` di tiap app hanya mengatur framework, perintah build, d
 Install dijalankan Vercel di **root repo** (bukan di dalam `apps/*`), memakai `bun.lock` di root
 dan workspace `@sidp/ui` + `@sidp/tokens`. `installCommand` di tiap app dibatasi ke paketnya
 sendiri supaya install lebih cepat (filtered installs, dokumentasi Vercel yang sama).
+
+## Domain
+
+Nama project dan domain produksi dibuat sama supaya tidak ada lagi kebingungan "URL mana milik
+app mana": `fintracker-umkm.vercel.app`, `fintracker-pekerja.vercel.app`. Alias lama
+(`umkm-five-dusky.vercel.app`, `pekerja-six.vercel.app`) masih hidup dan tetap menunjuk ke
+deployment yang sama, jadi tautan lama tidak mati.
+
+Domain baru ditambahkan dengan `vercel domains add <project>.vercel.app <project>` — bukan hanya
+`vercel alias set`, karena alias saja tidak ikut produksi berikutnya.
+
+## API: terlindungi SSO
+
+`fintracker-api.vercel.app/health` menjawab **302 ke vercel.com/sso-api**, bukan 200: project API
+punya Deployment Protection. Artinya API **tidak bisa ditulis publik** — bagus untuk sekarang,
+tapi juga berarti frontend belum bisa memakainya sampai proteksi itu dibuka (atau memakai
+protection-bypass token) dan sebuah shared secret ditambahkan.
 
 ## Kalau sekarang ada tiga project
 
