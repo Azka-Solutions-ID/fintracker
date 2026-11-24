@@ -1,4 +1,5 @@
 import {
+  AksesibilitasModule,
   AnggaranModule,
   BadgeModule,
   BookkeepingApp,
@@ -10,6 +11,7 @@ import {
   IconCard,
   IconChart,
   IconDownload,
+  IconHelp,
   IconList,
   IconMenu,
   IconHeart,
@@ -172,6 +174,14 @@ const MODULES: ModuleDef[] = [
     group: "alat",
     icon: <IconDownload />,
     render: (props) => <EksporModule {...props} />,
+  },
+  {
+    id: "aksesibilitas",
+    name: "Aksesibilitas",
+    note: "Pernyataan WCAG 2.2 AA dan rujukannya",
+    group: "alat",
+    icon: <IconHelp />,
+    render: (props) => <AksesibilitasModule {...props} />,
   },
 ];
 

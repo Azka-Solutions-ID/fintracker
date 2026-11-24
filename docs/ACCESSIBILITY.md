@@ -46,3 +46,26 @@ verifikasi**, bukan "sudah selesai". Checklist yang harus dijalankan sebelum dem
 
 Sampai 1–5 dijalankan, jangan menyebut demo ini "ramah lansia" di depan klien — sebut
 "mengikuti pedoman WCAG 2.2 AA dan pola yang terbukti pada literatur", itu klaim yang jujur.
+
+## Pernyataan aksesibilitas (tampil di aplikasi)
+
+Menu **Aksesibilitas** (sidebar desktop, kartu di layar Fitur) memuat pernyataan yang bisa
+ditunjukkan ke klien:
+
+- sasaran **WCAG 2.2 AA**, diuji axe-core 4.10.2 pada 31 layar, **0 pelanggaran**
+- daftar kepatuhan per kriteria (teks 18 px, target 48/60 px, kontras 7:1/4,5:1, tanpa drag,
+  status tidak warna-saja, label terlihat, uang diucapkan)
+- **batasan yang diakui**: belum diuji dengan pembaca layar sungguhan bersama pengguna
+  disabilitas, antarmuka hanya Bahasa Indonesia, fitur AI butuh internet
+
+Rujukan yang ditautkan dari dalam aplikasi:
+
+| Rujukan | URL |
+|---|---|
+| W3C WCAG 2.2 | https://www.w3.org/TR/WCAG22/ |
+| W3C WCAG 2.2 Quick Reference | https://www.w3.org/WAI/WCAG22/quickref/ |
+| British Council — Accessibility statement | https://www.britishcouncil.org/accessibility |
+
+Catatan untuk klien: pernyataan British Council menyebut situs mereka selaras **WCAG 2.1 AA**;
+aplikasi ini menargetkan **2.2 AA**, yang mencakup seluruh kriteria 2.1 AA ditambah sembilan
+kriteria baru (mis. 2.4.11 fokus tidak tertutup, 2.5.7 tanpa gestur geser, 3.3.8 autentikasi).

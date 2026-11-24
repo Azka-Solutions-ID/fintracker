@@ -149,3 +149,11 @@ export function IconMenu({ size = 24 }: IconProps) {
     </svg>
   );
 }
+
+export function IconHelp({ size = 24 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm-.1 3a3 3 0 0 0-3 3h2a1 1 0 1 1 1.6.8c-.8.6-1.5 1.2-1.5 2.7h2c0-.7.2-.9.8-1.4A3 3 0 0 0 11.9 7zM11 15.5h2V17h-2z" />
+    </svg>
+  );
+}

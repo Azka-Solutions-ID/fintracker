@@ -5,6 +5,7 @@ import { formatRupiah, rupiahWords } from "../money";
 import { answerQuestion, parseReceipt, splitBill, type Receipt } from "../lanjutan-logic";
 import { sum, today, uid, type Entry } from "../store";
 import { useQueue } from "../queue";
+import { aiConfigured, askAi, fileToDataUrl, readReceiptAi } from "../ai";
 import { Empty, FieldLabel, Intro, Row, Rows, Select, TextInput, type ModuleProps } from "./parts";
 
 /* ---------------------------------------------------------------- Scan struk (tanpa AI) */
@@ -20,8 +21,57 @@ export function ScanStrukModule({ book, walletIds }: ModuleProps) {
   const [category, setCategory] = useState("");
   const [note, setNote] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const categories = book.categories.filter((item) => item.kind === "keluar");
+
+  /** The model fills the same fields the user already edits; nothing is saved without a tap. */
+  function applyReceipt(
+    result: { merchant: string | null; total: number | null; date: string | null },
+    model: string,
+  ) {
+    if (result.total) setAmount(String(result.total));
+    if (result.date) setDate(result.date);
+    if (result.merchant) setNote(result.merchant);
+    setSaved(
+      result.total
+        ? `AI terbaca (${model}): ${formatRupiah(String(result.total))}${result.merchant ? ` dari ${result.merchant}` : ""}. Cek dulu sebelum menyimpan.`
+        : `AI (${model}) tidak menemukan totalnya. Isi manual di bawah.`,
+    );
+  }
+
+  async function readWithAi() {
+    setBusy(true);
+    setSaved(null);
+    try {
+      const result = await readReceiptAi({ text });
+      applyReceipt(result, result.model);
+    } catch (error) {
+      setSaved(error instanceof Error ? `AI gagal: ${error.message}` : "AI gagal.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function readPhoto(file: File) {
+    setBusy(true);
+    setSaved(null);
+    try {
+      const image = await fileToDataUrl(file);
+      const result = await readReceiptAi({ image });
+      applyReceipt(result, result.model);
+      setReceipt({
+        amount: result.total ?? undefined,
+        date: result.date ?? undefined,
+        merchant: result.merchant ?? undefined,
+        candidates: [],
+      });
+    } catch (error) {
+      setSaved(error instanceof Error ? `Foto gagal dibaca: ${error.message}` : "Foto gagal dibaca.");
+    } finally {
+      setBusy(false);
+    }
+  }
   const value = Number(amount || "0");
 
   function read() {
@@ -75,9 +125,37 @@ export function ScanStrukModule({ book, walletIds }: ModuleProps) {
 
         <div className="actionbar" style={{ marginTop: 0 }}>
           <Button variant="outline" onClick={read} disabled={text.trim().length < 3}>
-            Baca struk
+            Baca tanpa AI
           </Button>
         </div>
+
+        {aiConfigured() && (
+          <>
+            <div className="actionbar" style={{ marginTop: "var(--gap)" }}>
+              <Button variant="filled" onClick={readWithAi} disabled={busy || text.trim().length < 3}>
+                {busy ? "Membaca..." : "Baca dengan AI"}
+              </Button>
+            </div>
+
+            <div className="field">
+              <label className="module-label" htmlFor="struk-foto">
+                Atau foto struknya
+              </label>
+              <input
+                id="struk-foto"
+                className="module-input"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void readPhoto(file);
+                }}
+              />
+              <p className="field-hint">Foto dikecilkan di perangkat dulu, lalu dibaca model penglihatan.</p>
+            </div>
+          </>
+        )}
 
         {receipt && (
           <>
@@ -179,7 +257,8 @@ const EXAMPLES = [
 
 export function TanyaModule({ book, walletIds, v }: ModuleProps) {
   const [question, setQuestion] = useState("");
-  const [log, setLog] = useState<{ q: string; a: string }[]>([]);
+  const [log, setLog] = useState<{ q: string; a: string; source?: string }[]>([]);
+  const [busy, setBusy] = useState(false);
 
   const masuk = sum(book.entries.filter((entry) => entry.kind === "masuk"));
   const keluar = sum(book.entries.filter((entry) => entry.kind === "keluar"));
@@ -206,8 +285,47 @@ export function TanyaModule({ book, walletIds, v }: ModuleProps) {
       debts: book.debts,
       goals: book.goals,
     });
-    setLog((prev) => [{ q: clean, a: answer.text }, ...prev].slice(0, 6));
+    setLog((prev) => [{ q: clean, a: answer.text, source: "dihitung di perangkat" }, ...prev].slice(0, 6));
     setQuestion("");
+  }
+
+  async function askModel() {
+    const clean = question.trim();
+    if (!clean) return;
+    setBusy(true);
+    try {
+      const reply = await askAi(clean, {
+        masuk,
+        keluar,
+        selisih: masuk - keluar,
+        dompet: wallets,
+        anggaran: book.budgets.map((budget) => ({
+          kategori: book.categories.find((category) => category.id === budget.categoryId)?.name ?? "lain",
+          batas: budget.limit,
+        })),
+        utang: book.debts
+          .filter((debt) => !debt.settled)
+          .map((debt) => ({ jenis: debt.type, jumlah: debt.amount })),
+        tujuan: book.goals.map((goal) => ({ nama: goal.name, target: goal.target, terkumpul: goal.saved })),
+        jumlah_transaksi: book.entries.length,
+      });
+      setLog((prev) => [{ q: clean, a: reply.answer, source: reply.model }, ...prev].slice(0, 6));
+      setQuestion("");
+    } catch (error) {
+      setLog(
+        (prev) =>
+          [
+            {
+              q: clean,
+              a: error instanceof Error ? `AI gagal: ${error.message}` : "AI gagal menjawab.",
+              source: "AI error",
+            },
+            ...prev,
+          ].slice(0, 6),
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -228,10 +346,17 @@ export function TanyaModule({ book, walletIds, v }: ModuleProps) {
           />
         </div>
         <div className="actionbar" style={{ marginTop: 0 }}>
-          <Button variant="filled" onClick={() => ask(question)} disabled={!question.trim()}>
-            Tanya
+          <Button variant="outline" onClick={() => ask(question)} disabled={!question.trim()}>
+            Hitung sendiri
           </Button>
         </div>
+        {aiConfigured() && (
+          <div className="actionbar" style={{ marginTop: "var(--gap)" }}>
+            <Button variant="filled" onClick={askModel} disabled={busy || !question.trim()}>
+              {busy ? "Menunggu model..." : "Tanya AI"}
+            </Button>
+          </div>
+        )}
         {!question.trim() && <p className="field-hint">Ketik pertanyaan, atau ketuk contoh di bawah.</p>}
 
         <p className="module-label">Pertanyaan yang bisa dijawab</p>
@@ -252,6 +377,7 @@ export function TanyaModule({ book, walletIds, v }: ModuleProps) {
             <div className="card" key={`${item.q}-${index}`} style={{ marginBottom: "var(--gap)" }}>
               <p className="chat-q">{item.q}</p>
               <p className="chat-a">{item.a}</p>
+              {item.source && <p className="ai-badge">sumber: {item.source}</p>}
             </div>
           ))
         )}

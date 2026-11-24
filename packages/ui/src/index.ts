@@ -2,7 +2,7 @@ export { AppBar } from "./AppBar";
 export { BookkeepingApp, type AppShellProps, type ModuleDef, type Phase3Item, type Wallet } from "./AppShell";
 export { Button } from "./Button";
 export {
-  IconCalculator, IconCalendar, IconCard, IconChart, IconCheck, IconDownload, IconGrid, IconHeart,
+  IconCalculator, IconCalendar, IconCard, IconChart, IconCheck, IconDownload, IconGrid, IconHeart, IconHelp,
   IconList, IconMenu, IconPie, IconPlus, IconScale, IconStar, IconTag, IconTarget, IconWallet,
 } from "./Icons";
 export { MoneyInput } from "./MoneyInput";
@@ -18,3 +18,4 @@ export * from "./modules/kalkulator";
 export * from "./queue";
 export * from "./lanjutan-logic";
 export * from "./modules/lanjutan";
+export * from "./modules/akses";

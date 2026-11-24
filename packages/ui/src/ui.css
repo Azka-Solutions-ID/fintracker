@@ -1148,3 +1148,41 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- accessibility statement ---------- */
+.plain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.plain-list li {
+  position: relative;
+  padding: 8px 0 8px 22px;
+  font-size: calc(var(--body-medium) * var(--scale));
+  line-height: 1.55;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.plain-list li:last-child {
+  border-bottom: 0;
+}
+.plain-list li::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  color: var(--primary);
+  font-weight: 700;
+}
+.ext-link {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+}
+.ext-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
