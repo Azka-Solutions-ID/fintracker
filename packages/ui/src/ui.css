@@ -1,0 +1,1150 @@
+/* A single box model everywhere: module inputs at width:100% + padding were 16 px wider than
+   the 320 px viewport, which scrolled the whole page sideways (WCAG 1.4.10). */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Material 3 components. Sizes come from @sidp/tokens; nothing here hard-codes a colour
+   or a font size. Touch targets stay >= 48px, primary action 60px. */
+
+/* ---------- layout ---------- */
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  min-height: var(--appbar-h);
+  padding: 0 var(--gap);
+  background: var(--surface-container);
+  border-bottom: 1px solid var(--outline-variant);
+}
+.appbar-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--shape-sm);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 700;
+  font-size: 16px;
+  flex: 0 0 auto;
+}
+.appbar-action {
+  display: grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  border-radius: var(--shape-full);
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+.appbar-action:hover { background: var(--surface-container-high); }
+.appbar-title {
+  flex: 1;
+  margin: 0;
+  font-size: calc(var(--title-large) * var(--scale));
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.screen {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--gap-lg) var(--gap);
+  /* keep the fixed navigation bar from covering content (WCAG 2.4.11) */
+  padding-bottom: calc(var(--navbar-h) + var(--gap-xl) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------- bottom navigation ---------- */
+.navbar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  min-height: var(--navbar-h);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--surface-container);
+  border-top: 1px solid var(--outline-variant);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: var(--tap-primary);
+  border: 0;
+  background: none;
+  color: var(--on-surface-variant);
+  font-family: inherit;
+  cursor: pointer;
+}
+.nav-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 30px;
+  border-radius: var(--shape-full);
+  transition: background var(--motion) var(--ease);
+}
+.nav-item[aria-current="page"] {
+  color: var(--on-surface);
+  font-weight: 600;
+}
+.nav-item[aria-current="page"] .nav-icon {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+.nav-label {
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+}
+
+/* ---------- typography blocks ---------- */
+.h-page {
+  margin: 0 0 6px 0;
+  font-size: calc(var(--headline-small) * var(--scale));
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.2px;
+}
+.h-section {
+  margin: var(--gap-xl) 0 var(--gap);
+  font-size: calc(var(--title-large) * var(--scale));
+  font-weight: 600;
+  line-height: 1.25;
+}
+.support {
+  margin: 4px 0 0;
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+
+/* ---------- cards ---------- */
+.card {
+  background: var(--surface-container);
+  border-radius: var(--shape-md);
+  padding: var(--gap-lg);
+  margin-bottom: var(--gap);
+}
+.card-tight {
+  padding: var(--gap);
+}
+.card-label {
+  margin: 0 0 var(--gap);
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--tap-min);
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--shape-full);
+  font-family: inherit;
+  font-size: calc(var(--label-large) * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--motion) var(--ease), box-shadow var(--motion) var(--ease);
+  /* deliberately no background transition: a paused animation timeline (background tab,
+     frozen frame) left the primary action painted in its disabled colour — white on pale,
+     unreadable. The enabled fill must appear instantly. */
+}
+.btn-filled {
+  width: 100%;
+  min-height: var(--tap-primary);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: calc(var(--title-medium) * var(--scale));
+}
+.btn-filled:hover { box-shadow: 0 2px 6px rgb(0 0 0 / 0.18); }
+.btn-filled:active { transform: scale(0.99); }
+.btn-tonal {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+  width: 100%;
+  min-height: var(--tap-primary);
+}
+.btn-text {
+  background: transparent;
+  color: var(--primary);
+  padding: 0 16px;
+}
+.btn-outline {
+  background: transparent;
+  color: var(--on-surface);
+  border: 1px solid var(--outline);
+}
+.btn:disabled {
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ---------- segmented button ---------- */
+.segmented {
+  display: flex;
+  border: 1px solid var(--outline);
+  border-radius: var(--shape-full);
+  overflow: hidden;
+  margin-bottom: var(--gap-lg);
+}
+.segment {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--tap-primary);
+  border: 0;
+  background: transparent;
+  color: var(--on-surface);
+  font-family: inherit;
+  font-size: calc(var(--label-large) * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+.segment + .segment { border-left: 1px solid var(--outline); }
+.segment[aria-pressed="true"] {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+/* M3 single-select segment: tonal fill + a leading tick, centred with the label as one group,
+   plus a bolder weight. Two non-colour cues, so the selection never depends on colour (1.4.1). */
+.segment[aria-pressed="true"] .segment-label { font-weight: 700; }
+.segment-check {
+  display: inline-block;
+  width: 18px;
+  font-weight: 700;
+}
+
+/* ---------- fields ---------- */
+.field { margin-bottom: var(--gap); }
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: calc(var(--label-large) * var(--scale));
+  font-weight: 600;
+  color: var(--on-surface);
+}
+.field-shell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-container-highest);
+  border-bottom: 2px solid var(--outline);
+  border-radius: var(--shape-xs) var(--shape-xs) 0 0;
+  padding: 0 16px;
+  transition: border-color var(--motion) var(--ease);
+}
+.field-shell:focus-within { border-bottom-color: var(--primary); border-bottom-width: 3px; }
+.field-shell input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--tap-primary);
+  border: 0;
+  background: transparent;
+  color: var(--on-surface);
+  font-family: inherit;
+  font-size: calc(var(--body-large) * var(--scale));
+  padding: 8px 0;
+}
+.field-shell input:focus { outline: none; }
+.error-text {
+  margin: 8px 0 0;
+  color: var(--error);
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+}
+.field-hint {
+  margin: 6px 0 0;
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+.field-error {
+  margin: 6px 0 0;
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  color: var(--error);
+}
+
+/* M3 filled money field: label inside, the number is the content, primary underline on focus */
+.money-field {
+  background: var(--surface-container-highest);
+  border-radius: var(--shape-sm) var(--shape-sm) 0 0;
+  border-bottom: 2px solid var(--outline);
+  padding: 10px 16px 8px;
+  transition: border-color var(--motion) var(--ease), background var(--motion) var(--ease);
+}
+.money-field:focus-within {
+  border-bottom-color: var(--primary);
+  border-bottom-width: 3px;
+  padding-bottom: 7px;
+}
+.money-label {
+  display: block;
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+.money-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.money-prefix {
+  font-size: calc(var(--title-large) * var(--scale));
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+.money-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--on-surface);
+  font-family: inherit;
+  font-size: calc(var(--display-small) * var(--scale));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+  padding: 2px 0 4px;
+}
+.money-input::placeholder { color: var(--on-surface-variant); opacity: 0.6; }
+.money-input:focus { outline: none; }
+.money-words {
+  margin: 4px 0 0;
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+
+/* The primary action sits in normal flow at the end of the form. A sticky bar and a floating
+   FAB were both tried: each one painted over the pocket selector — a tappable option covered
+   by the save button is a mis-tap trap for users with low digital literacy. One screen of
+   scrolling beats an action that hides the field the user still has to fill. */
+.actionbar {
+  margin-top: var(--gap-lg);
+}
+
+/* plain M3 filled text field, same grammar as the money field: label inside the box */
+.text-field {
+  background: var(--surface-container-highest);
+  border-radius: var(--shape-sm) var(--shape-sm) 0 0;
+  border-bottom: 2px solid var(--outline);
+  padding: 8px 16px;
+  transition: border-color var(--motion) var(--ease);
+}
+.text-field:focus-within {
+  border-bottom-color: var(--primary);
+  border-bottom-width: 3px;
+  padding-bottom: 7px;
+}
+.text-field label {
+  display: block;
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+.text-field input {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--on-surface);
+  font-family: inherit;
+  font-size: calc(var(--body-large) * var(--scale));
+  padding: 2px 0 4px;
+}
+.text-field input:focus { outline: none; }
+
+/* ---------- assist chips ---------- */
+/* four equal columns: five chips wrapped 3 + 1 and pushed the primary action down */
+.chips {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.chip {
+  min-height: var(--tap-min);
+  padding: 0 8px;
+  border: 1px solid var(--outline);
+  border-radius: var(--shape-full);
+  background: transparent;
+  color: var(--on-surface);
+  font-family: inherit;
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chip:hover { background: var(--surface-container-high); }
+
+/* ---------- wallet cards ---------- */
+.wallets {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--gap-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.wallets legend {
+  padding: 0 0 8px;
+  font-size: calc(var(--title-medium) * var(--scale));
+  font-weight: 600;
+}
+.wallet {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  align-items: center;
+  min-height: var(--tap-primary);
+  padding: 12px 16px;
+  border: 1px solid var(--outline);
+  border-radius: var(--shape-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background var(--motion) var(--ease), border-color var(--motion) var(--ease);
+}
+.wallet input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.wallet-selected {
+  background: var(--primary-container);
+  border-color: var(--primary);
+  border-width: 2px;
+}
+/* name and the "Dipilih" marker share the left edge: a right-aligned marker sat exactly where
+   the floating Simpan button lands, and the marker is the thing that must never be covered. */
+.wallet-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wallet-name { font-size: calc(var(--title-medium) * var(--scale)); font-weight: 600; }
+.wallet-hint {
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+.wallet-check {
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 700;
+  color: var(--on-primary-container);
+}
+
+/* ---------- progress ---------- */
+.progress-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 var(--gap);
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+}
+.progress-track {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: var(--shape-full);
+  background: var(--primary);
+  transition: width var(--motion) var(--ease);
+}
+
+/* ---------- data rows ---------- */
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap);
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.row:last-child { border-bottom: 0; }
+.row-label { font-size: calc(var(--body-large) * var(--scale)); }
+.amount {
+  font-size: calc(var(--title-large) * var(--scale));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.amount-hero {
+  font-size: calc(var(--display-small) * var(--scale));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+}
+
+/* ---------- list ---------- */
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.list li:last-child { border-bottom: 0; }
+.list-main { font-size: calc(var(--body-large) * var(--scale)); font-weight: 600; }
+.list-sub {
+  grid-column: 1;
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+.list-amount {
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-size: calc(var(--title-medium) * var(--scale));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- pill / badge ---------- */
+.pill {
+  justify-self: end;
+  align-self: start;
+  padding: 2px 12px;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- switch (settings) ---------- */
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  min-height: var(--tap-primary);
+  font-size: calc(var(--body-large) * var(--scale));
+}
+.switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 32px;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+  border: 2px solid var(--outline);
+  appearance: none;
+  cursor: pointer;
+  transition: background var(--motion) var(--ease);
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--shape-full);
+  background: var(--outline);
+  transition: transform var(--motion) var(--ease), background var(--motion) var(--ease);
+}
+.switch:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.switch:checked::after {
+  transform: translateX(24px);
+  background: var(--on-primary);
+}
+
+/* ---------- snackbar ---------- */
+.snackbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--navbar-h) + 12px + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  width: min(600px, calc(100% - 2 * var(--gap)));
+  padding: 12px 16px;
+  border-radius: var(--shape-sm);
+  background: var(--inverse-surface);
+  color: var(--on-inverse-surface);
+  font-size: calc(var(--body-medium) * var(--scale));
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.22);
+}
+.snackbar-text { flex: 1; }
+.snackbar .btn-text { color: var(--primary-container); }
+
+/* ---------- module list (Lainnya) ---------- */
+.modules li { align-items: start; }
+
+/* ============================================================ phase 2 modules */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.module-form {
+  display: grid;
+  gap: var(--gap);
+  margin: var(--gap-lg) 0 var(--gap-xl);
+}
+.module-label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+.module-input,
+.module-select {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 10px 14px;
+  border: 1px solid var(--outline);
+  border-radius: var(--shape-sm);
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: inherit;
+  font-size: calc(var(--body-large) * var(--scale));
+}
+.module-input:focus-visible,
+.module-select:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* budget + goal rows */
+.budget,
+.goal {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.budget:last-child,
+.goal:last-child {
+  border-bottom: 0;
+}
+.budget-name {
+  margin: 0;
+  font-size: calc(var(--title-medium) * var(--scale));
+  font-weight: 600;
+}
+.budget-amount {
+  margin: 2px 0 10px;
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.meter {
+  height: 12px;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+  overflow: hidden;
+}
+.meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: var(--shape-full);
+}
+.meter-over {
+  background: var(--error);
+}
+.meter-text {
+  margin: 6px 0 0;
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+
+/* weekly chart: a real table so the numbers are the content */
+.chart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--gap-lg) 0 var(--gap-xl);
+  font-size: calc(var(--body-medium) * var(--scale));
+}
+.chart-table caption {
+  text-align: left;
+}
+.chart-table th,
+.chart-table td {
+  padding: 8px 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--outline-variant);
+  vertical-align: middle;
+}
+.chart-table thead th {
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+.chart-today th {
+  font-weight: 700;
+}
+.chart-bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.chart-bar {
+  display: block;
+  min-width: 4px;
+  height: 14px;
+  border-radius: var(--shape-full);
+}
+.chart-in {
+  background: var(--primary);
+}
+.chart-out {
+  background: var(--tertiary);
+}
+.chart-value {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* health score */
+.score-card {
+  margin: var(--gap-lg) 0 var(--gap);
+  padding: var(--gap-lg);
+  border-radius: var(--shape-md);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+.score-number {
+  margin: 0;
+  font-size: 56px;
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.score-label {
+  margin: 4px 0 0;
+  font-size: calc(var(--title-medium) * var(--scale));
+  font-weight: 600;
+}
+.health-part {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.health-part:last-child {
+  border-bottom: 0;
+}
+.health-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  flex-wrap: wrap;
+}
+.health-name {
+  font-weight: 600;
+  font-size: calc(var(--title-medium) * var(--scale));
+}
+.health-detail {
+  margin: 4px 0 0;
+  font-size: calc(var(--body-medium) * var(--scale));
+  color: var(--on-surface-variant);
+}
+
+/* module hub + inline actions */
+.module-link {
+  display: grid;
+  grid-template-columns: 1fr 20px;
+  grid-template-rows: auto auto;
+  gap: 2px 12px;
+  align-items: center;
+  width: 100%;
+  padding: 14px 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  color: var(--on-surface);
+  cursor: pointer;
+}
+.module-link .list-main {
+  grid-column: 1;
+  grid-row: 1;
+}
+.module-link .list-sub {
+  grid-column: 1;
+  grid-row: 2;
+}
+/* the chevron is the affordance: without it the rows read as static text */
+.module-chevron {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--on-surface-variant);
+}
+.module-link:active {
+  opacity: 0.7;
+}
+.module-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--shape-sm);
+}
+.link-danger,
+.link-action {
+  margin-top: 8px;
+  min-height: var(--tap-min);
+  padding: 0 14px;
+  border: 1px solid var(--outline);
+  border-radius: var(--shape-full);
+  background: transparent;
+  color: var(--on-surface);
+  font-family: inherit;
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+.link-action {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.pill-earned {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+/* a settled row is marked by the words "sudah lunas" and a strikethrough; opacity lowered the
+   secondary text to ~4.2:1, under the 4.5 floor */
+.is-settled .list-main,
+.is-settled .list-sub {
+  text-decoration: line-through;
+}
+.appbar-back {
+  display: grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  margin-left: -8px;
+  border: 0;
+  border-radius: var(--shape-full);
+  background: transparent;
+  color: var(--on-surface);
+  cursor: pointer;
+}
+.appbar-back:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ============================================================ responsive shell
+
+   Phone: one column, app bar on top, five-item bar at the bottom.
+   Desktop: a permanent sidebar with every destination on one level, a wider content column,
+   and a second column for live context. The same routes exist in both — nothing is buried
+   one level deeper just because the screen is wider. */
+
+.app-root {
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: none;
+}
+
+.side-rail {
+  display: none;
+}
+
+/* ---------- >= 900px: sidebar layout ---------- */
+@media (min-width: 900px) {
+  .app-root {
+    display: grid;
+    grid-template-columns: 268px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 16px 14px 20px;
+    border-right: 1px solid var(--outline-variant);
+    background: var(--surface-container);
+    overflow-y: auto;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 8px 6px;
+  }
+
+  .sidebar-title {
+    font-size: calc(var(--title-medium) * var(--scale));
+    font-weight: 700;
+  }
+
+  /* the nav scrolls; every row keeps the 48px target from docs/ACCESSIBILITY.md */
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+
+  .side-group {
+    margin-top: 10px;
+  }
+
+  .side-group-title {
+    margin: 0 0 2px;
+    padding: 0 12px;
+    font-size: calc(var(--body-medium) * var(--scale));
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+  }
+
+  .side-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: var(--tap-min);
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--shape-full);
+    background: transparent;
+    color: var(--on-surface);
+    font-family: inherit;
+    font-size: calc(var(--body-large) * var(--scale));
+    font-size: calc(var(--body-large) * var(--scale));
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .side-item svg {
+    flex: 0 0 auto;
+  }
+
+  .side-item:hover {
+    background: var(--surface-container-high);
+  }
+
+  .side-item.is-active {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+    font-weight: 700;
+  }
+
+  .side-item:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: -3px;
+  }
+
+  .side-help {
+    flex: 0 0 auto;
+    margin-top: auto;
+    padding: 12px;
+    border-radius: var(--shape-md);
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    font-size: calc(var(--body-medium) * var(--scale));
+    text-decoration: none;
+    min-height: var(--tap-min);
+    display: flex;
+    align-items: center;
+  }
+
+  .side-help:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* the phone bar is gone; the sidebar carries every destination */
+  .navbar {
+    display: none;
+  }
+
+  .screen {
+    max-width: 900px;
+    margin: 0;
+    padding: 24px 32px 64px;
+  }
+
+  /* the sidebar already shows the brand and the app name: repeating the mark here read as a
+     leftover phone header */
+  .appbar-mark {
+    display: none;
+  }
+
+  .appbar {
+    position: static;
+    padding: 0 32px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--outline-variant);
+  }
+
+  /* a module grid reads better in three columns once there is room */
+  .module-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- >= 1200px: content plus a live second column ---------- */
+@media (min-width: 1200px) {
+  .screen {
+    max-width: 1100px;
+  }
+
+  .layout-2col {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .side-rail {
+    display: block;
+    position: sticky;
+    top: 24px;
+  }
+}
+
+/* ---------- module cards (phone hub) ---------- */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  margin-top: var(--gap);
+}
+
+.module-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  align-items: center;
+  padding: 14px;
+  min-height: 84px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--shape-md);
+  background: var(--surface-container-low, var(--surface));
+  color: var(--on-surface);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.module-card:active {
+  background: var(--surface-container-high);
+}
+
+.module-card:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.module-card-icon {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--shape-full);
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
+.module-card-name {
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.module-card-note {
+  grid-column: 2;
+  font-size: calc(var(--body-small, 15px) * var(--scale));
+  color: var(--on-surface-variant);
+  line-height: 1.3;
+}
+
+/* ---------- fase 3: struk, tanya, sinkron ---------- */
+.module-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 12px 14px;
+  border: 1px solid var(--outline);
+  border-radius: var(--shape-sm);
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: calc(var(--body-medium) * var(--scale));
+  line-height: 1.5;
+  resize: vertical;
+}
+.module-textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.chat-q {
+  margin: 0 0 6px;
+  font-size: calc(var(--body-medium) * var(--scale));
+  font-weight: 700;
+  color: var(--on-surface-variant);
+}
+.chat-a {
+  margin: 0;
+  font-size: calc(var(--body-large) * var(--scale));
+  line-height: 1.5;
+}
+
+/* long labels (example questions) must wrap inside the chip, not push the page sideways */
+.chips-wrap {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.chips-wrap .chip {
+  white-space: normal;
+  text-align: left;
+  padding: 8px 12px;
+  line-height: 1.3;
+}
+
+/* two module cards do not fit under 380px without clipping their labels */
+@media (max-width: 380px) {
+  .module-grid {
+    grid-template-columns: 1fr;
+  }
+}

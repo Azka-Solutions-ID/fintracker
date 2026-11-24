@@ -1,0 +1,19 @@
+{
+  "name": "@sidp/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "build": "echo 'api: no build step (bun runtime on vercel)'"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.4.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "elysia": "^1.4.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.2.0"
+  }
+}
